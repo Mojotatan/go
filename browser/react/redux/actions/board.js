@@ -2,7 +2,7 @@ import initialState from '../initial-state';
 
 
 // actions
-import {SET_TILE, CHECK_TILE, KILL_TILE, DECHECK} from '../constants'
+import {SET_TILE, CHECK_TILE, KILL_TILE, DECHECK, SET_STATUS} from '../constants'
 
 //action creators
 export const setTile = (tile, color) => {return {type: SET_TILE, tile, color}}
@@ -12,6 +12,8 @@ export const checkTile = (tile, bool) => {return {type: CHECK_TILE, tile, bool}}
 export const killTile = (tile) => {return {type: KILL_TILE, tile}}
 
 export const decheck = () => {return {type: DECHECK}}
+
+export const setStatus = (status) => {return {type: SET_STATUS, status}}
 
 
 // reducer
@@ -36,6 +38,14 @@ export default function reducer (prevState = initialState, action) {
         case DECHECK:
             for (let spot in newState.board) {
                 newState.board[spot].checked = false;
+            }
+            return newState
+
+        case SET_STATUS:
+            if (action.status === 'spectator') {
+                newState.playerColor = null
+            } else {
+            newState.playerColor = (action.status === 'black player') ? 'black' : 'white'
             }
             return newState
 

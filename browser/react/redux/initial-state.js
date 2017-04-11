@@ -73,5 +73,6 @@ export default {
     board: initialBoard,
     adjacent,
     showByRow,
-    turn
+    turn,
+    playerColor: null
 }

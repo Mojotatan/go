@@ -1,24 +1,27 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {setTile, checkTile, killTile, decheck} from '../redux/actions/board';
+import socket from '../socket';
 
 class Board extends React.Component {
     constructor() {
         super()
     }
 
+    // actual dom view
     render() {
         // console.log('props', this.props)
         let r = 0;
-        const {adjacent, board, showByRow, turn} = this.props.board;
-        // console.log('board', board)
+        const {adjacent, board, showByRow, turn, playerColor} = this.props.board;
         const handleClick = (e) => {
             this.props.play(e, turn)
             this.props.lifeOrDeath(board)
         }
+        const hTwo = (playerColor) ? `the ${playerColor} player` : 'a spectator';
         return (
             <div>
-                <h3>{turn}'s turn</h3>
+                <h2>You have joined as {hTwo}</h2>
+                <h3>It is {turn}'s turn</h3>
                 {showByRow(board).map(row => {
                     r++;
                     return (
@@ -49,7 +52,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        play: (e, color) => dispatch(setTile(handlePlay(e), color)),
+        play: (e, color) => {
+            dispatch(setTile(handlePlay(e), color))
+            socket.emit('play', setTile(handlePlay(e), color))
+        },
         lifeOrDeath: (board) => {
 
             // check utility function
@@ -72,6 +78,7 @@ const mapDispatchToProps = (dispatch) => {
             const kill = (spot) => {
                 const color = board[spot].color
                 dispatch(killTile(spot))
+                socket.emit('kill', killTile(spot))
                 board[spot].neighbors.forEach(neighbor => {
                     if (board[neighbor].color === color) {
                         kill(neighbor)

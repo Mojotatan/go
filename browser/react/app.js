@@ -6,6 +6,9 @@ import store from './redux/store';
 // import Container from './container';
 import Board from './components/Board';
 
+import socket from './socket';
+
+// path structure for client-side components
 ReactDOM.render(
     <Provider store={store}>
         <Router history={browserHistory} >
