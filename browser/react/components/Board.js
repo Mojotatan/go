@@ -11,13 +11,14 @@ class Board extends React.Component {
         // console.log('props', this.props)
         let r = 0;
         const {adjacent, board, showByRow, turn} = this.props.board;
-        console.log('board', board)
+        // console.log('board', board)
         const handleClick = (e) => {
             this.props.play(e, turn)
             this.props.lifeOrDeath(board)
         }
         return (
             <div>
+                <h3>{turn}'s turn</h3>
                 {showByRow(board).map(row => {
                     r++;
                     return (
@@ -79,7 +80,7 @@ const mapDispatchToProps = (dispatch) => {
             }
 
             Object.keys(board).forEach(spot => {
-                if (!board[spot].checked) {
+                if (!board[spot].checked && board[spot].color !== 'empty') {
                     if (!check(spot)) {
                         kill(spot)
                     }

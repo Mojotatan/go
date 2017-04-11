@@ -14700,8 +14700,8 @@ var Board = function (_React$Component) {
                 board = _props$board.board,
                 showByRow = _props$board.showByRow,
                 turn = _props$board.turn;
+            // console.log('board', board)
 
-            console.log('board', board);
             var handleClick = function handleClick(e) {
                 _this2.props.play(e, turn);
                 _this2.props.lifeOrDeath(board);
@@ -14709,6 +14709,12 @@ var Board = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 null,
+                _react2.default.createElement(
+                    'h3',
+                    null,
+                    turn,
+                    '\'s turn'
+                ),
                 showByRow(board).map(function (row) {
                     r++;
                     return _react2.default.createElement(
@@ -14778,7 +14784,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
             };
 
             Object.keys(board).forEach(function (spot) {
-                if (!board[spot].checked) {
+                if (!board[spot].checked && board[spot].color !== 'empty') {
                     if (!check(spot)) {
                         kill(spot);
                     }
@@ -15043,7 +15049,6 @@ function reducer() {
         case _constants.SET_TILE:
             if (prevState.board[action.tile].color === 'empty') {
                 newState.turn = prevState.turn === 'black' ? 'white' : 'black';
-                console.log(newState.turn + ' player\'s turn');
             }
             newState.board[action.tile].color = prevState.board[action.tile].color === 'empty' ? action.color : 'empty';
             return newState;

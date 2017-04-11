@@ -21,7 +21,6 @@ export default function reducer (prevState = initialState, action) {
         case SET_TILE:
             if (prevState.board[action.tile].color === 'empty') {
                 newState.turn = (prevState.turn === 'black') ? 'white' : 'black'
-                console.log(newState.turn + ' player\'s turn')
             }
             newState.board[action.tile].color = (prevState.board[action.tile].color === 'empty') ? action.color : 'empty'
             return newState
