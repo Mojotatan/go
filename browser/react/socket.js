@@ -13,7 +13,7 @@ socket.on('join', (status) => {
 })
 
 socket.on('play', (action) => {
-    console.log('Your opponent makes their move')
+    // console.log('Your opponent makes their move')
     store.dispatch(action)
 })
 

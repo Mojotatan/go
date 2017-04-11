@@ -67,12 +67,11 @@ const showByRow = (obj) => {
     return rows
 }
 
-const turn = 'black'
-
 export default {
     board: initialBoard,
     adjacent,
     showByRow,
-    turn,
-    playerColor: null
+    turn: 'black',
+    playerColor: null,
+    prevMove: 'START'
 }

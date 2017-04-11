@@ -12,7 +12,7 @@ class Board extends React.Component {
     render() {
         // console.log('props', this.props)
         let r = 0;
-        const {adjacent, board, showByRow, turn, playerColor} = this.props.board;
+        const {adjacent, board, showByRow, turn, playerColor, prevMove} = this.props.board;
         const handleClick = (e) => {
             this.props.play(e, turn)
             this.props.lifeOrDeath(board)
@@ -22,12 +22,14 @@ class Board extends React.Component {
             <div>
                 <h2>You have joined as {hTwo}</h2>
                 <h3>It is {turn}'s turn</h3>
+                <h4>Last move: {prevMove}</h4>
+                <button disabled={turn !== playerColor} onClick={handleClick} id="pass">PASS</button>
                 {showByRow(board).map(row => {
                     r++;
                     return (
                     <div key={r} className="tile-row">
                         {row.map(spot => {
-                            return <button onClick={handleClick} key={spot} id={spot} className={`tile ${board[spot].color}`}>+</button>
+                            return <button disabled={board[spot].color !== 'empty' || turn !== playerColor} onClick={handleClick} key={spot} id={spot} className={`tile ${board[spot].color}`}></button>
                         })}
                     </div>)
                 })}

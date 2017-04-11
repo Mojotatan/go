@@ -5615,10 +5615,11 @@ function reducer() {
     var newState = Object.assign({}, prevState);
     switch (action.type) {
         case _constants.SET_TILE:
-            if (prevState.board[action.tile].color === 'empty') {
-                newState.turn = prevState.turn === 'black' ? 'white' : 'black';
+            newState.turn = prevState.turn === 'black' ? 'white' : 'black';
+            if (action.tile !== 'pass') {
+                newState.board[action.tile].color = action.color;
             }
-            newState.board[action.tile].color = prevState.board[action.tile].color === 'empty' ? action.color : 'empty';
+            newState.prevMove = action.tile;
             return newState;
 
         case _constants.CHECK_TILE:
@@ -8891,7 +8892,7 @@ socket.on('join', function (status) {
 });
 
 socket.on('play', function (action) {
-    console.log('Your opponent makes their move');
+    // console.log('Your opponent makes their move')
     _store2.default.dispatch(action);
 });
 
@@ -14854,7 +14855,8 @@ var Board = function (_React$Component) {
                 board = _props$board.board,
                 showByRow = _props$board.showByRow,
                 turn = _props$board.turn,
-                playerColor = _props$board.playerColor;
+                playerColor = _props$board.playerColor,
+                prevMove = _props$board.prevMove;
 
             var handleClick = function handleClick(e) {
                 _this2.props.play(e, turn);
@@ -14877,17 +14879,24 @@ var Board = function (_React$Component) {
                     turn,
                     '\'s turn'
                 ),
+                _react2.default.createElement(
+                    'h4',
+                    null,
+                    'Last move: ',
+                    prevMove
+                ),
+                _react2.default.createElement(
+                    'button',
+                    { disabled: turn !== playerColor, onClick: handleClick, id: 'pass' },
+                    'PASS'
+                ),
                 showByRow(board).map(function (row) {
                     r++;
                     return _react2.default.createElement(
                         'div',
                         { key: r, className: 'tile-row' },
                         row.map(function (spot) {
-                            return _react2.default.createElement(
-                                'button',
-                                { onClick: handleClick, key: spot, id: spot, className: 'tile ' + board[spot].color },
-                                '+'
-                            );
+                            return _react2.default.createElement('button', { disabled: board[spot].color !== 'empty' || turn !== playerColor, onClick: handleClick, key: spot, id: spot, className: 'tile ' + board[spot].color });
                         })
                     );
                 })
@@ -15286,14 +15295,13 @@ var showByRow = function showByRow(obj) {
     return rows;
 };
 
-var turn = 'black';
-
 exports.default = {
     board: initialBoard,
     adjacent: adjacent,
     showByRow: showByRow,
-    turn: turn,
-    playerColor: null
+    turn: 'black',
+    playerColor: null,
+    prevMove: 'START'
 };
 
 /***/ }),

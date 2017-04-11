@@ -21,10 +21,11 @@ export default function reducer (prevState = initialState, action) {
     let newState = Object.assign({}, prevState)
     switch (action.type) {
         case SET_TILE:
-            if (prevState.board[action.tile].color === 'empty') {
-                newState.turn = (prevState.turn === 'black') ? 'white' : 'black'
+            newState.turn = (prevState.turn === 'black') ? 'white' : 'black'
+            if (action.tile !== 'pass') {
+                newState.board[action.tile].color = action.color
             }
-            newState.board[action.tile].color = (prevState.board[action.tile].color === 'empty') ? action.color : 'empty'
+            newState.prevMove = action.tile
             return newState
 
         case CHECK_TILE:
