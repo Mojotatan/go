@@ -24,7 +24,7 @@ export default class Chat extends React.Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <span>Say something </span> 
+                <span>Chat </span> 
                 <input onChange={this.handleChange} value={this.state.inputText}></input>
                 <button>Talk!</button>
             </form>

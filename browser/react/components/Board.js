@@ -46,7 +46,6 @@ const handlePlay = (e) => {
 
 
 const mapStateToProps = (state) => {
-    console.log('state', state)
     return {
         board: state.board,
         user: state.lobby.user

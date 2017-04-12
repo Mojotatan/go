@@ -2,7 +2,7 @@ import initialState from '../initial-state';
 
 
 // actions
-import {SET_TILE, CHECK_TILE, KILL_TILE, DECHECK, SET_STATUS} from '../constants'
+import {SET_TILE, CHECK_TILE, KILL_TILE, DECHECK, SET_STATUS, INITIALIZE_BOARD, JOIN, ADVANCE_GAME} from '../constants'
 
 //action creators
 export const setTile = (tile, color) => {return {type: SET_TILE, tile, color}}
@@ -15,11 +15,21 @@ export const decheck = () => {return {type: DECHECK}}
 
 export const setStatus = (status) => {return {type: SET_STATUS, status}}
 
+export const initializeBoard = (size, turn, prevMove) => {return {type: INITIALIZE_BOARD, size, turn, prevMove}}
+
+export const join = () => {return {type: JOIN}}
+
+export const advanceGame = (board) => {return {type: ADVANCE_GAME, board}}
+
 
 // reducer
-export default function reducer (prevState = initialState, action) {
+export default function reducer (prevState = initialState(19, 'black', 'START'), action) {
     let newState = Object.assign({}, prevState)
     switch (action.type) {
+        case INITIALIZE_BOARD:
+            newState = initialState(action.size, action.turn, action.prevMove)
+            return newState
+
         case SET_TILE:
             newState.turn = (prevState.turn === 'black') ? 'white' : 'black'
             if (action.tile !== 'pass') {
@@ -46,8 +56,16 @@ export default function reducer (prevState = initialState, action) {
             if (action.status === 'spectator') {
                 newState.playerColor = null
             } else {
-            newState.playerColor = (action.status === 'black player') ? 'black' : 'white'
+            newState.playerColor = action.status
             }
+            return newState
+        
+        case JOIN:
+            newState.player++
+            return newState
+
+        case ADVANCE_GAME:
+            newState.board = action.board
             return newState
 
         default:

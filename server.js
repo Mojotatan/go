@@ -10,18 +10,12 @@ const socketio = require('socket.io')
 const io = socketio(server)
 
 // event handlers and emitters for socket
+let hosts = {};
+
+// giving up on lobby lol
 io.on('connection', function(socket) {
-    // players = assignPlayer(players, socket.id)
-    // let clientStatus;
-    // if (players.includes(socket.id)) {
-    //     clientStatus = (players[0] === socket.id) ? 'black player' : 'white player'
-    // } else {
-    //     clientStatus = 'spectator'
-    // }
 
     console.log('A user has connected @', socket.id)
-
-    // socket.emit('join', clientStatus)
 
     socket.emit('setName')
 
@@ -31,6 +25,20 @@ io.on('connection', function(socket) {
 
     socket.on('message', (message) => {
         socket.broadcast.emit('message', message)
+    })
+
+    socket.on('newGame', (obj) => {
+        hosts[obj.host] = socket.id
+        socket.broadcast.emit('newGame', obj)
+    })
+
+    socket.on('joinGame', (host) => {
+        socket.to(hosts[host]).emit('joinGame', hosts[host])
+    })
+
+    socket.on('megaJoin', (data) => {
+        console.log('processing', data)
+        socket.to(data.id).emit('megaJoin', data)
     })
 
     socket.on('play', (action) => {
@@ -43,10 +51,6 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', () => {
         console.log('A user left @', socket.id)
-        // users[newUser.index].active = false
-        // if (clientStatus !== 'spectator') {
-        //     players[players.indexOf(socket.id)] = null
-        // }
     })
 })
 
