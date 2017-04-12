@@ -67,7 +67,7 @@
     float: right
 }
 
-li {
+/*li {
     text-align: right
 }
 
@@ -75,6 +75,10 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}*/
+
+form {
+    clear: both
 }
 
 /*.black {

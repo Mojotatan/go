@@ -7,6 +7,6 @@ export const SET_STATUS = 'SET_STATUS';
 
 // lobby
 export const NEW_GAME = 'NEW_GAME';
-export const ALL_USERS = 'ALL_USERS';
+export const LOAD_OPTIONS = 'LOAD_OPTIONS';
+export const SET_OPTIONS = 'SET_OPTIONS';
 export const SET_NAME = 'SET_NAME';
-export const NEW_USER = 'NEW_USER';

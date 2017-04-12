@@ -10,19 +10,6 @@ const socketio = require('socket.io')
 const io = socketio(server)
 
 // event handlers and emitters for socket
-let players = [null, null];
-const assignPlayer = (players, id) => {
-    let add = false;
-    return players.map(player => {
-        if (player || add) {return player}
-        else {
-            add = true;
-            return id
-        }
-    })
-}
-let users = [];
-
 io.on('connection', function(socket) {
     // players = assignPlayer(players, socket.id)
     // let clientStatus;
@@ -32,34 +19,18 @@ io.on('connection', function(socket) {
     //     clientStatus = 'spectator'
     // }
 
-    // console.log(`A new ${clientStatus} has connected`)
+    console.log('A user has connected @', socket.id)
 
     // socket.emit('join', clientStatus)
 
+    socket.emit('setName')
 
-    let newUser = {id: socket.id, name: 'user ' + users.length, active: true, index: users.length}
-    // const userGuy = (id) => {
-    //     return users.filter(user => {
-    //         return user.id = id
-    //     })[0]
-    // }
+    socket.on('newUser', (user) => {
+        socket.broadcast.emit('newUser', user)
+    })
 
-    console.log(`${newUser.name} connected`)
-    users.push(newUser)
-    socket.emit('newUser', {users, index: users.length - 1})
-    socket.broadcast.emit('newUser', {users, index: users.length - 1})
-    // console.log('current users:', users)
-    // console.log('this guy', socket.id, newUser)
-
-    socket.on('userEdit', (obj) => {
-        console.log('server receieved userEdit')
-        // users = users.map(user => {
-        //     return (newUser.id === user.id) ? {id: user.id, name: name} : user
-        // })
-        users[obj.index].name = obj.name
-        // console.log('current users:', users)
-        // console.log('this guy', socket.id, newUser)
-        socket.broadcast.emit('updateUsers', users)
+    socket.on('message', (message) => {
+        socket.broadcast.emit('message', message)
     })
 
     socket.on('play', (action) => {
@@ -71,7 +42,7 @@ io.on('connection', function(socket) {
     })
 
     socket.on('disconnect', () => {
-        console.log(`${newUser.name} left`)
+        console.log('A user left @', socket.id)
         // users[newUser.index].active = false
         // if (clientStatus !== 'spectator') {
         //     players[players.indexOf(socket.id)] = null

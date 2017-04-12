@@ -2,11 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {setTile, checkTile, killTile, decheck} from '../redux/actions/board';
 import socket from '../socket';
+import Chat from './Chat';
 
 class Board extends React.Component {
-    constructor() {
-        super()
-    }
 
     // actual dom view
     render() {
@@ -22,6 +20,7 @@ class Board extends React.Component {
             <div>
                 <h1>GO</h1>
                 <h2>You have joined as {hTwo}</h2>
+                <Chat user={this.props.user}/>
                 <h3>It is {turn}'s turn</h3>
                 <h4>Last move: {prevMove}</h4>
                 <button disabled={turn !== playerColor} onClick={handleClick} id="pass">PASS</button>
@@ -47,9 +46,10 @@ const handlePlay = (e) => {
 
 
 const mapStateToProps = (state) => {
-    // console.log('state', state)
+    console.log('state', state)
     return {
-        board: state.board
+        board: state.board,
+        user: state.lobby.user
     }
 }
 
