@@ -20,6 +20,7 @@ class Board extends React.Component {
         const hTwo = (playerColor) ? `the ${playerColor} player` : 'a spectator';
         return (
             <div>
+                <h1>GO</h1>
                 <h2>You have joined as {hTwo}</h2>
                 <h3>It is {turn}'s turn</h3>
                 <h4>Last move: {prevMove}</h4>

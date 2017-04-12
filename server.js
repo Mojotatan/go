@@ -21,19 +21,46 @@ const assignPlayer = (players, id) => {
         }
     })
 }
+let users = [];
+
 io.on('connection', function(socket) {
-    players = assignPlayer(players, socket.id)
-    let clientStatus;
-    if (players.includes(socket.id)) {
-        clientStatus = (players[0] === socket.id) ? 'black player' : 'white player'
-    } else {
-        clientStatus = 'spectator'
-    }
+    // players = assignPlayer(players, socket.id)
+    // let clientStatus;
+    // if (players.includes(socket.id)) {
+    //     clientStatus = (players[0] === socket.id) ? 'black player' : 'white player'
+    // } else {
+    //     clientStatus = 'spectator'
+    // }
 
-    console.log(`A new ${clientStatus} has connected`)
+    // console.log(`A new ${clientStatus} has connected`)
 
-    socket.emit('join', clientStatus)
+    // socket.emit('join', clientStatus)
 
+
+    let newUser = {id: socket.id, name: 'user ' + users.length, active: true, index: users.length}
+    // const userGuy = (id) => {
+    //     return users.filter(user => {
+    //         return user.id = id
+    //     })[0]
+    // }
+
+    console.log(`${newUser.name} connected`)
+    users.push(newUser)
+    socket.emit('newUser', {users, index: users.length - 1})
+    socket.broadcast.emit('newUser', {users, index: users.length - 1})
+    // console.log('current users:', users)
+    // console.log('this guy', socket.id, newUser)
+
+    socket.on('userEdit', (obj) => {
+        console.log('server receieved userEdit')
+        // users = users.map(user => {
+        //     return (newUser.id === user.id) ? {id: user.id, name: name} : user
+        // })
+        users[obj.index].name = obj.name
+        // console.log('current users:', users)
+        // console.log('this guy', socket.id, newUser)
+        socket.broadcast.emit('updateUsers', users)
+    })
 
     socket.on('play', (action) => {
         socket.broadcast.emit('play', action)
@@ -44,10 +71,11 @@ io.on('connection', function(socket) {
     })
 
     socket.on('disconnect', () => {
-        console.log(`A ${clientStatus} left`)
-        if (clientStatus !== 'spectator') {
-            players[players.indexOf(socket.id)] = null
-        }
+        console.log(`${newUser.name} left`)
+        // users[newUser.index].active = false
+        // if (clientStatus !== 'spectator') {
+        //     players[players.indexOf(socket.id)] = null
+        // }
     })
 })
 

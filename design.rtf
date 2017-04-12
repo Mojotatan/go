@@ -6,7 +6,7 @@
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 todo\
-	lobby\'97socket.io that shit\
+	lobby\
 		able to see/join available games, start new games\
 \
 	go\
@@ -15,4 +15,15 @@
 	make the layout not utter shit\
 	implement ko\
 	settings\'97board size\'97new action: set size or whatever\
-	player name functionality}
+\
+	fix name functionality\'97refactor server to not have to store users there \
+		BOOM\
+		server doesn\'92t store that shit\'97users don\'92t need to know about other users\
+		instead, use console.log as a chat function basically\
+		new connections get an alert to type in their username\
+		have a chat box input field\
+		emit events like \'93USER says textextext\'94 which console.logs for everyone\
+		console logs when new users enter or leave\
+		consider using chalk to make it more pretty\
+		but yeah basically axe all the stuff on front and back regarding the users array, simply store in front end a username\
+	}

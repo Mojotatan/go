@@ -63,6 +63,20 @@
 	border-radius: 50px;
 }
 
+.sidebar {
+    float: right
+}
+
+li {
+    text-align: right
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
 /*.black {
     background-color: black;
 }*/
