@@ -11,6 +11,7 @@ const io = socketio(server)
 
 // event handlers and emitters for socket
 let hosts = {};
+let players = [null, null];
 
 // giving up on lobby lol
 io.on('connection', function(socket) {
@@ -18,6 +19,14 @@ io.on('connection', function(socket) {
     console.log('A user has connected @', socket.id)
 
     socket.emit('setName')
+
+    if (!players[0]) {
+        socket.emit('join', 'black')
+        players[0] = socket.id
+    } else if (!players[1]) {
+        socket.emit('join', 'white')
+        players[1] = socket.id
+    } else {socket.emit('join', 'spectator')}
 
     socket.on('newUser', (user) => {
         socket.broadcast.emit('newUser', user)
@@ -32,14 +41,20 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('newGame', obj)
     })
 
-    socket.on('joinGame', (host) => {
-        socket.to(hosts[host]).emit('joinGame', hosts[host])
+    socket.on('join', (obj) => {
+        let channel = obj.num
+        socket.join(channel)
+        socket.to(channel).emit('newNewUser', `${obj.user} joined the game`)
     })
 
-    socket.on('megaJoin', (data) => {
-        console.log('processing', data)
-        socket.to(data.id).emit('megaJoin', data)
-    })
+    // socket.on('joinGame', (host) => {
+    //     socket.to(hosts[host]).emit('joinGame', hosts[host])
+    // })
+
+    // socket.on('megaJoin', (data) => {
+    //     console.log('processing', data)
+    //     socket.to(data.id).emit('megaJoin', data)
+    // })
 
     socket.on('play', (action) => {
         socket.broadcast.emit('play', action)
@@ -49,8 +64,15 @@ io.on('connection', function(socket) {
         socket.broadcast.emit('kill', action)
     })
 
+    socket.on('finalScore', (score) => {
+        socket.broadcast.emit('finalScore', score)
+    })
+
     socket.on('disconnect', () => {
         console.log('A user left @', socket.id)
+        if (players.includes(socket.id)) {
+            players[players.indexOf(socket.id)] = null
+        }
     })
 })
 

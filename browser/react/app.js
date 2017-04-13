@@ -12,7 +12,10 @@ ReactDOM.render(
     <Provider store={store}>
         <Router history={browserHistory} >
             <Route path="/" component={Lobby} />
-            <Route path="/go" component={Board} />
+            <Route path="/go" component={Board}/>
+            {/*<Route path="/go/9" component={Board} onEnter={}/>
+            <Route path="/go/13" component={Board} onEnter={} />
+            <Route path="/go/19" component={Board} onEnter={}/>*/}
         </Router>
     </Provider>,
     document.getElementById('game')

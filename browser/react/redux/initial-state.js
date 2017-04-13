@@ -73,6 +73,7 @@ export default (size, turn, prevMove) => {
         playerColor: null,
         prevMove,
         players: 0,
-        size
+        size,
+        end: false
     }
 }

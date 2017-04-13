@@ -1,4 +1,6 @@
 import initialState from '../initial-state';
+import score from '../scoring';
+import socket from '../../socket';
 
 
 // actions
@@ -23,7 +25,7 @@ export const advanceGame = (board) => {return {type: ADVANCE_GAME, board}}
 
 
 // reducer
-export default function reducer (prevState = initialState(19, 'black', 'START'), action) {
+export default function reducer (prevState = initialState(13, 'black', 'START'), action) {
     let newState = Object.assign({}, prevState)
     switch (action.type) {
         case INITIALIZE_BOARD:
@@ -34,6 +36,10 @@ export default function reducer (prevState = initialState(19, 'black', 'START'),
             newState.turn = (prevState.turn === 'black') ? 'white' : 'black'
             if (action.tile !== 'pass') {
                 newState.board[action.tile].color = action.color
+            } else if (action.tile === 'pass' && prevState.prevMove === 'pass') {
+                newState.playerColor = 'null'
+                console.log('Game over, man')
+                newState.end = true
             }
             newState.prevMove = action.tile
             return newState
@@ -49,6 +55,11 @@ export default function reducer (prevState = initialState(19, 'black', 'START'),
         case DECHECK:
             for (let spot in newState.board) {
                 newState.board[spot].checked = false;
+            }
+            if (newState.end) {
+                const finalScore = score(newState.board, newState.size)
+                console.log('Final Score:', finalScore)
+                socket.emit('finalScore', finalScore)
             }
             return newState
 

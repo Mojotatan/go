@@ -1886,7 +1886,7 @@ module.exports = ReactUpdates;
 
 
 
-var keyMirror = __webpack_require__(35);
+var keyMirror = __webpack_require__(36);
 
 var PropagationPhases = keyMirror({ bubbled: null, captured: null });
 
@@ -2958,7 +2958,7 @@ var _warning2 = _interopRequireDefault(_warning);
 
 var _PathUtils = __webpack_require__(18);
 
-var _Actions = __webpack_require__(36);
+var _Actions = __webpack_require__(37);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3337,7 +3337,7 @@ function _resetWarned() {
 
 
 var DOMNamespaces = __webpack_require__(61);
-var setInnerHTML = __webpack_require__(44);
+var setInnerHTML = __webpack_require__(45);
 
 var createMicrosoftUnsafeLocalFunction = __webpack_require__(73);
 var setTextContent = __webpack_require__(135);
@@ -3701,7 +3701,7 @@ var routes = exports.routes = oneOfType([route, arrayOf(route)]);
 
 var _prodInvariant = __webpack_require__(3);
 
-var EventPluginRegistry = __webpack_require__(39);
+var EventPluginRegistry = __webpack_require__(40);
 var EventPluginUtils = __webpack_require__(62);
 var ReactErrorUtils = __webpack_require__(67);
 
@@ -4447,6 +4447,132 @@ module.exports = Transaction;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.advanceGame = exports.join = exports.initializeBoard = exports.setStatus = exports.decheck = exports.killTile = exports.checkTile = exports.setTile = undefined;
+exports.default = reducer;
+
+var _initialState = __webpack_require__(145);
+
+var _initialState2 = _interopRequireDefault(_initialState);
+
+var _scoring = __webpack_require__(284);
+
+var _scoring2 = _interopRequireDefault(_scoring);
+
+var _socket = __webpack_require__(48);
+
+var _socket2 = _interopRequireDefault(_socket);
+
+var _constants = __webpack_require__(87);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//action creators
+var setTile = exports.setTile = function setTile(tile, color) {
+    return { type: _constants.SET_TILE, tile: tile, color: color };
+};
+
+// actions
+var checkTile = exports.checkTile = function checkTile(tile, bool) {
+    return { type: _constants.CHECK_TILE, tile: tile, bool: bool };
+};
+
+var killTile = exports.killTile = function killTile(tile) {
+    return { type: _constants.KILL_TILE, tile: tile };
+};
+
+var decheck = exports.decheck = function decheck() {
+    return { type: _constants.DECHECK };
+};
+
+var setStatus = exports.setStatus = function setStatus(status) {
+    return { type: _constants.SET_STATUS, status: status };
+};
+
+var initializeBoard = exports.initializeBoard = function initializeBoard(size, turn, prevMove) {
+    return { type: _constants.INITIALIZE_BOARD, size: size, turn: turn, prevMove: prevMove };
+};
+
+var join = exports.join = function join() {
+    return { type: _constants.JOIN };
+};
+
+var advanceGame = exports.advanceGame = function advanceGame(board) {
+    return { type: _constants.ADVANCE_GAME, board: board };
+};
+
+// reducer
+function reducer() {
+    var prevState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : (0, _initialState2.default)(13, 'black', 'START');
+    var action = arguments[1];
+
+    var newState = Object.assign({}, prevState);
+    switch (action.type) {
+        case _constants.INITIALIZE_BOARD:
+            newState = (0, _initialState2.default)(action.size, action.turn, action.prevMove);
+            return newState;
+
+        case _constants.SET_TILE:
+            newState.turn = prevState.turn === 'black' ? 'white' : 'black';
+            if (action.tile !== 'pass') {
+                newState.board[action.tile].color = action.color;
+            } else if (action.tile === 'pass' && prevState.prevMove === 'pass') {
+                newState.playerColor = 'null';
+                console.log('Game over, man');
+                newState.end = true;
+            }
+            newState.prevMove = action.tile;
+            return newState;
+
+        case _constants.CHECK_TILE:
+            newState.board[action.tile].checked = action.bool;
+            return newState;
+
+        case _constants.KILL_TILE:
+            newState.board[action.tile].color = 'empty';
+            return newState;
+
+        case _constants.DECHECK:
+            for (var spot in newState.board) {
+                newState.board[spot].checked = false;
+            }
+            if (newState.end) {
+                var finalScore = (0, _scoring2.default)(newState.board, newState.size);
+                console.log('Final Score:', finalScore);
+                _socket2.default.emit('finalScore', finalScore);
+            }
+            return newState;
+
+        case _constants.SET_STATUS:
+            if (action.status === 'spectator') {
+                newState.playerColor = null;
+            } else {
+                newState.playerColor = action.status;
+            }
+            return newState;
+
+        case _constants.JOIN:
+            newState.player++;
+            return newState;
+
+        case _constants.ADVANCE_GAME:
+            newState.board = action.board;
+            return newState;
+
+        default:
+            return newState;
+    }
+}
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -4497,7 +4623,7 @@ module.exports = keyMirror;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4525,7 +4651,7 @@ var REPLACE = exports.REPLACE = 'REPLACE';
 var POP = exports.POP = 'POP';
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4580,7 +4706,7 @@ var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isE
 };
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4636,7 +4762,7 @@ var DisabledInputUtils = {
 module.exports = DisabledInputUtils;
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4890,7 +5016,7 @@ module.exports = EventPluginRegistry;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4910,7 +5036,7 @@ module.exports = EventPluginRegistry;
 var _assign = __webpack_require__(4);
 
 var EventConstants = __webpack_require__(14);
-var EventPluginRegistry = __webpack_require__(39);
+var EventPluginRegistry = __webpack_require__(40);
 var ReactEventEmitterMixin = __webpack_require__(236);
 var ViewportMetrics = __webpack_require__(127);
 
@@ -5226,7 +5352,7 @@ var ReactBrowserEventEmitter = _assign({}, ReactEventEmitterMixin, {
 module.exports = ReactBrowserEventEmitter;
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5243,7 +5369,7 @@ module.exports = ReactBrowserEventEmitter;
 
 
 
-var keyMirror = __webpack_require__(35);
+var keyMirror = __webpack_require__(36);
 
 var ReactPropTypeLocations = keyMirror({
   prop: null,
@@ -5254,7 +5380,7 @@ var ReactPropTypeLocations = keyMirror({
 module.exports = ReactPropTypeLocations;
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5332,7 +5458,7 @@ SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 module.exports = SyntheticMouseEvent;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5461,7 +5587,7 @@ function escapeTextContentForBrowser(text) {
 module.exports = escapeTextContentForBrowser;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5565,7 +5691,7 @@ if (ExecutionEnvironment.canUseDOM) {
 module.exports = setInnerHTML;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5581,115 +5707,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.advanceGame = exports.join = exports.initializeBoard = exports.setStatus = exports.decheck = exports.killTile = exports.checkTile = exports.setTile = undefined;
-exports.default = reducer;
-
-var _initialState = __webpack_require__(145);
-
-var _initialState2 = _interopRequireDefault(_initialState);
-
-var _constants = __webpack_require__(87);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//action creators
-var setTile = exports.setTile = function setTile(tile, color) {
-    return { type: _constants.SET_TILE, tile: tile, color: color };
-};
-
-// actions
-var checkTile = exports.checkTile = function checkTile(tile, bool) {
-    return { type: _constants.CHECK_TILE, tile: tile, bool: bool };
-};
-
-var killTile = exports.killTile = function killTile(tile) {
-    return { type: _constants.KILL_TILE, tile: tile };
-};
-
-var decheck = exports.decheck = function decheck() {
-    return { type: _constants.DECHECK };
-};
-
-var setStatus = exports.setStatus = function setStatus(status) {
-    return { type: _constants.SET_STATUS, status: status };
-};
-
-var initializeBoard = exports.initializeBoard = function initializeBoard(size, turn, prevMove) {
-    return { type: _constants.INITIALIZE_BOARD, size: size, turn: turn, prevMove: prevMove };
-};
-
-var join = exports.join = function join() {
-    return { type: _constants.JOIN };
-};
-
-var advanceGame = exports.advanceGame = function advanceGame(board) {
-    return { type: _constants.ADVANCE_GAME, board: board };
-};
-
-// reducer
-function reducer() {
-    var prevState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : (0, _initialState2.default)(19, 'black', 'START');
-    var action = arguments[1];
-
-    var newState = Object.assign({}, prevState);
-    switch (action.type) {
-        case _constants.INITIALIZE_BOARD:
-            newState = (0, _initialState2.default)(action.size, action.turn, action.prevMove);
-            return newState;
-
-        case _constants.SET_TILE:
-            newState.turn = prevState.turn === 'black' ? 'white' : 'black';
-            if (action.tile !== 'pass') {
-                newState.board[action.tile].color = action.color;
-            }
-            newState.prevMove = action.tile;
-            return newState;
-
-        case _constants.CHECK_TILE:
-            newState.board[action.tile].checked = action.bool;
-            return newState;
-
-        case _constants.KILL_TILE:
-            newState.board[action.tile].color = 'empty';
-            return newState;
-
-        case _constants.DECHECK:
-            for (var spot in newState.board) {
-                newState.board[spot].checked = false;
-            }
-            return newState;
-
-        case _constants.SET_STATUS:
-            if (action.status === 'spectator') {
-                newState.playerColor = null;
-            } else {
-                newState.playerColor = action.status;
-            }
-            return newState;
-
-        case _constants.JOIN:
-            newState.player++;
-            return newState;
-
-        case _constants.ADVANCE_GAME:
-            newState.board = action.board;
-            return newState;
-
-        default:
-            return newState;
-    }
-}
 
 /***/ }),
 /* 47 */
@@ -5806,7 +5823,7 @@ var _store = __webpack_require__(84);
 
 var _store2 = _interopRequireDefault(_store);
 
-var _board = __webpack_require__(46);
+var _board = __webpack_require__(35);
 
 var _lobby = __webpack_require__(47);
 
@@ -5820,6 +5837,10 @@ socket.on('connect', function () {
 
 socket.on('newUser', function (user) {
     console.log(user + ' has entered the lobby');
+});
+
+socket.on('newNewUser', function (text) {
+    console.log(text);
 });
 
 socket.on('setName', function () {
@@ -5872,6 +5893,10 @@ socket.on('play', function (action) {
 socket.on('kill', function (action) {
     // console.log('A piece falls!')
     _store2.default.dispatch(action);
+});
+
+socket.on('finalScore', function (score) {
+    console.log('Final score:', score);
 });
 
 exports.default = socket;
@@ -5961,7 +5986,7 @@ exports.go = exports.replaceLocation = exports.pushLocation = exports.startListe
 
 var _LocationUtils = __webpack_require__(23);
 
-var _DOMUtils = __webpack_require__(37);
+var _DOMUtils = __webpack_require__(38);
 
 var _DOMStateStorage = __webpack_require__(91);
 
@@ -6081,7 +6106,7 @@ var _runTransitionHook = __webpack_require__(53);
 
 var _runTransitionHook2 = _interopRequireDefault(_runTransitionHook);
 
-var _Actions = __webpack_require__(36);
+var _Actions = __webpack_require__(37);
 
 var _LocationUtils = __webpack_require__(23);
 
@@ -6796,7 +6821,7 @@ var ReactDOMComponentTree = __webpack_require__(6);
 var ReactInstrumentation = __webpack_require__(10);
 
 var createMicrosoftUnsafeLocalFunction = __webpack_require__(73);
-var setInnerHTML = __webpack_require__(44);
+var setInnerHTML = __webpack_require__(45);
 var setTextContent = __webpack_require__(135);
 
 function getNodeAfter(parentNode, node) {
@@ -7320,7 +7345,7 @@ module.exports = KeyEscapeUtils;
 var _prodInvariant = __webpack_require__(3);
 
 var ReactPropTypes = __webpack_require__(125);
-var ReactPropTypeLocations = __webpack_require__(41);
+var ReactPropTypeLocations = __webpack_require__(42);
 var ReactPropTypesSecret = __webpack_require__(70);
 
 var invariant = __webpack_require__(1);
@@ -11797,13 +11822,13 @@ var _prodInvariant = __webpack_require__(3),
 
 var ReactComponent = __webpack_require__(65);
 var ReactElement = __webpack_require__(12);
-var ReactPropTypeLocations = __webpack_require__(41);
+var ReactPropTypeLocations = __webpack_require__(42);
 var ReactPropTypeLocationNames = __webpack_require__(69);
 var ReactNoopUpdateQueue = __webpack_require__(68);
 
 var emptyObject = __webpack_require__(28);
 var invariant = __webpack_require__(1);
-var keyMirror = __webpack_require__(35);
+var keyMirror = __webpack_require__(36);
 var keyOf = __webpack_require__(17);
 var warning = __webpack_require__(2);
 
@@ -12557,7 +12582,7 @@ module.exports = ReactDOMComponentFlags;
 
 var _assign = __webpack_require__(4);
 
-var DisabledInputUtils = __webpack_require__(38);
+var DisabledInputUtils = __webpack_require__(39);
 var LinkedValueUtils = __webpack_require__(64);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactUpdates = __webpack_require__(13);
@@ -12773,7 +12798,7 @@ module.exports = ReactDOMSelect;
 var ReactCurrentOwner = __webpack_require__(15);
 var ReactComponentTreeHook = __webpack_require__(11);
 var ReactElement = __webpack_require__(12);
-var ReactPropTypeLocations = __webpack_require__(41);
+var ReactPropTypeLocations = __webpack_require__(42);
 
 var checkReactTypeSpec = __webpack_require__(129);
 
@@ -13279,7 +13304,7 @@ var _prodInvariant = __webpack_require__(3);
 
 var DOMLazyTree = __webpack_require__(26);
 var DOMProperty = __webpack_require__(22);
-var ReactBrowserEventEmitter = __webpack_require__(40);
+var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactCurrentOwner = __webpack_require__(15);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactDOMContainerInfo = __webpack_require__(220);
@@ -13296,7 +13321,7 @@ var ReactUpdates = __webpack_require__(13);
 var emptyObject = __webpack_require__(28);
 var instantiateReactComponent = __webpack_require__(133);
 var invariant = __webpack_require__(1);
-var setInnerHTML = __webpack_require__(44);
+var setInnerHTML = __webpack_require__(45);
 var shouldUpdateReactComponent = __webpack_require__(79);
 var warning = __webpack_require__(2);
 
@@ -13816,7 +13841,7 @@ module.exports = ReactMount;
 
 
 
-var keyMirror = __webpack_require__(35);
+var keyMirror = __webpack_require__(36);
 
 /**
  * When a component's children are updated, a series of update configuration
@@ -14847,8 +14872,8 @@ module.exports = isTextInputElement;
 
 
 var ExecutionEnvironment = __webpack_require__(7);
-var escapeTextContentForBrowser = __webpack_require__(43);
-var setInnerHTML = __webpack_require__(44);
+var escapeTextContentForBrowser = __webpack_require__(44);
+var setInnerHTML = __webpack_require__(45);
 
 /**
  * Set the textContent property of a node, ensuring that whitespace is preserved
@@ -15252,9 +15277,9 @@ var _react = __webpack_require__(5);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(45);
+var _reactRedux = __webpack_require__(46);
 
-var _board = __webpack_require__(46);
+var _board = __webpack_require__(35);
 
 var _socket = __webpack_require__(48);
 
@@ -15435,13 +15460,13 @@ var _react = __webpack_require__(5);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(45);
+var _reactRedux = __webpack_require__(46);
 
 var _reactRouter = __webpack_require__(85);
 
 var _lobby = __webpack_require__(47);
 
-var _board = __webpack_require__(46);
+var _board = __webpack_require__(35);
 
 var _socket = __webpack_require__(48);
 
@@ -15674,7 +15699,7 @@ var _reactDom = __webpack_require__(142);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRedux = __webpack_require__(45);
+var _reactRedux = __webpack_require__(46);
 
 var _reactRouter = __webpack_require__(85);
 
@@ -15719,7 +15744,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(82);
 
-var _board = __webpack_require__(46);
+var _board = __webpack_require__(35);
 
 var _board2 = _interopRequireDefault(_board);
 
@@ -15821,7 +15846,8 @@ exports.default = function (size, turn, prevMove) {
         playerColor: null,
         prevMove: prevMove,
         players: 0,
-        size: size
+        size: size,
+        end: false
     };
 };
 
@@ -17087,7 +17113,7 @@ var _warning2 = _interopRequireDefault(_warning);
 
 var _LocationUtils = __webpack_require__(23);
 
-var _DOMUtils = __webpack_require__(37);
+var _DOMUtils = __webpack_require__(38);
 
 var _DOMStateStorage = __webpack_require__(91);
 
@@ -17267,7 +17293,7 @@ var _RefreshProtocol = __webpack_require__(163);
 
 var RefreshProtocol = _interopRequireWildcard(_RefreshProtocol);
 
-var _DOMUtils = __webpack_require__(37);
+var _DOMUtils = __webpack_require__(38);
 
 var _createHistory = __webpack_require__(52);
 
@@ -17363,7 +17389,7 @@ var _invariant2 = _interopRequireDefault(_invariant);
 
 var _ExecutionEnvironment = __webpack_require__(51);
 
-var _DOMUtils = __webpack_require__(37);
+var _DOMUtils = __webpack_require__(38);
 
 var _HashProtocol = __webpack_require__(162);
 
@@ -17523,7 +17549,7 @@ var _createHistory = __webpack_require__(52);
 
 var _createHistory2 = _interopRequireDefault(_createHistory);
 
-var _Actions = __webpack_require__(36);
+var _Actions = __webpack_require__(37);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20234,7 +20260,7 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _Actions = __webpack_require__(36);
+var _Actions = __webpack_require__(37);
 
 var _invariant = __webpack_require__(8);
 
@@ -21719,7 +21745,7 @@ module.exports = DefaultEventPluginOrder;
 var EventConstants = __webpack_require__(14);
 var EventPropagators = __webpack_require__(31);
 var ReactDOMComponentTree = __webpack_require__(6);
-var SyntheticMouseEvent = __webpack_require__(42);
+var SyntheticMouseEvent = __webpack_require__(43);
 
 var keyOf = __webpack_require__(17);
 
@@ -22510,7 +22536,7 @@ var ReactErrorUtils = __webpack_require__(67);
 var ReactInstanceMap = __webpack_require__(32);
 var ReactInstrumentation = __webpack_require__(10);
 var ReactNodeTypes = __webpack_require__(124);
-var ReactPropTypeLocations = __webpack_require__(41);
+var ReactPropTypeLocations = __webpack_require__(42);
 var ReactReconciler = __webpack_require__(27);
 
 var checkReactTypeSpec = __webpack_require__(129);
@@ -23528,7 +23554,7 @@ module.exports = ReactDOM;
 
 
 
-var DisabledInputUtils = __webpack_require__(38);
+var DisabledInputUtils = __webpack_require__(39);
 
 /**
  * Implements a <button> host component that does not receive mouse events
@@ -23571,8 +23597,8 @@ var DOMProperty = __webpack_require__(22);
 var DOMPropertyOperations = __webpack_require__(112);
 var EventConstants = __webpack_require__(14);
 var EventPluginHub = __webpack_require__(30);
-var EventPluginRegistry = __webpack_require__(39);
-var ReactBrowserEventEmitter = __webpack_require__(40);
+var EventPluginRegistry = __webpack_require__(40);
+var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactDOMButton = __webpack_require__(218);
 var ReactDOMComponentFlags = __webpack_require__(115);
 var ReactDOMComponentTree = __webpack_require__(6);
@@ -23585,7 +23611,7 @@ var ReactMultiChild = __webpack_require__(242);
 var ReactServerRenderingTransaction = __webpack_require__(247);
 
 var emptyFunction = __webpack_require__(9);
-var escapeTextContentForBrowser = __webpack_require__(43);
+var escapeTextContentForBrowser = __webpack_require__(44);
 var invariant = __webpack_require__(1);
 var isEventSupported = __webpack_require__(78);
 var keyOf = __webpack_require__(17);
@@ -24921,7 +24947,7 @@ module.exports = ReactDOMIDOperations;
 var _prodInvariant = __webpack_require__(3),
     _assign = __webpack_require__(4);
 
-var DisabledInputUtils = __webpack_require__(38);
+var DisabledInputUtils = __webpack_require__(39);
 var DOMPropertyOperations = __webpack_require__(112);
 var LinkedValueUtils = __webpack_require__(64);
 var ReactDOMComponentTree = __webpack_require__(6);
@@ -25599,7 +25625,7 @@ var DOMChildrenOperations = __webpack_require__(60);
 var DOMLazyTree = __webpack_require__(26);
 var ReactDOMComponentTree = __webpack_require__(6);
 
-var escapeTextContentForBrowser = __webpack_require__(43);
+var escapeTextContentForBrowser = __webpack_require__(44);
 var invariant = __webpack_require__(1);
 var validateDOMNesting = __webpack_require__(81);
 
@@ -25766,7 +25792,7 @@ module.exports = ReactDOMTextComponent;
 var _prodInvariant = __webpack_require__(3),
     _assign = __webpack_require__(4);
 
-var DisabledInputUtils = __webpack_require__(38);
+var DisabledInputUtils = __webpack_require__(39);
 var LinkedValueUtils = __webpack_require__(64);
 var ReactDOMComponentTree = __webpack_require__(6);
 var ReactUpdates = __webpack_require__(13);
@@ -26069,7 +26095,7 @@ module.exports = {
 
 
 var DOMProperty = __webpack_require__(22);
-var EventPluginRegistry = __webpack_require__(39);
+var EventPluginRegistry = __webpack_require__(40);
 var ReactComponentTreeHook = __webpack_require__(11);
 
 var warning = __webpack_require__(2);
@@ -26910,7 +26936,7 @@ var EventPluginUtils = __webpack_require__(62);
 var ReactComponentEnvironment = __webpack_require__(66);
 var ReactClass = __webpack_require__(114);
 var ReactEmptyComponent = __webpack_require__(118);
-var ReactBrowserEventEmitter = __webpack_require__(40);
+var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactHostComponent = __webpack_require__(120);
 var ReactUpdates = __webpack_require__(13);
 
@@ -27656,7 +27682,7 @@ var _assign = __webpack_require__(4);
 
 var CallbackQueue = __webpack_require__(111);
 var PooledClass = __webpack_require__(20);
-var ReactBrowserEventEmitter = __webpack_require__(40);
+var ReactBrowserEventEmitter = __webpack_require__(41);
 var ReactInputSelection = __webpack_require__(121);
 var ReactInstrumentation = __webpack_require__(10);
 var Transaction = __webpack_require__(34);
@@ -28689,7 +28715,7 @@ var SyntheticClipboardEvent = __webpack_require__(253);
 var SyntheticEvent = __webpack_require__(16);
 var SyntheticFocusEvent = __webpack_require__(256);
 var SyntheticKeyboardEvent = __webpack_require__(258);
-var SyntheticMouseEvent = __webpack_require__(42);
+var SyntheticMouseEvent = __webpack_require__(43);
 var SyntheticDragEvent = __webpack_require__(255);
 var SyntheticTouchEvent = __webpack_require__(259);
 var SyntheticTransitionEvent = __webpack_require__(260);
@@ -29451,7 +29477,7 @@ module.exports = SyntheticCompositionEvent;
 
 
 
-var SyntheticMouseEvent = __webpack_require__(42);
+var SyntheticMouseEvent = __webpack_require__(43);
 
 /**
  * @interface DragEvent
@@ -29764,7 +29790,7 @@ module.exports = SyntheticTransitionEvent;
 
 
 
-var SyntheticMouseEvent = __webpack_require__(42);
+var SyntheticMouseEvent = __webpack_require__(43);
 
 /**
  * @interface WheelEvent
@@ -30450,7 +30476,7 @@ module.exports = onlyChild;
 
 
 
-var escapeTextContentForBrowser = __webpack_require__(43);
+var escapeTextContentForBrowser = __webpack_require__(44);
 
 /**
  * Escapes attribute value to prevent scripting attacks.
@@ -31294,6 +31320,79 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 284 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var control = function control(a, b) {
+    if (a === 'neutral' || b === 'neutral') {
+        return 'neutral';
+    } else if (a === 'empty' || !a) {
+        return b;
+    } else if (b === 'empty' || !b) {
+        return a;
+    } else if (a !== b) {
+        return 'neutral';
+    } else {
+        return b;
+    }
+};
+
+//     if (!a) {
+//         return b
+//     } else if (!b || b === 'empty') {
+//         return a
+//     } else if (a !== b) {
+//         return 'neutral'
+//     } else {
+//         return b
+//     }
+// }
+
+exports.default = function (board, size) {
+    var check = function check(spot, controller, val) {
+        var newVal = val + 1;
+        spot.checked = true;
+        spot.neighbors.forEach(function (neighbor) {
+            if (board[neighbor].color === 'empty' && !board[neighbor].checked) {
+                var blar = check(board[neighbor], controller, newVal);
+                newVal = blar[1];
+                controller = control(controller, blar[0]);
+            } else {
+                controller = control(controller, board[neighbor].color);
+            }
+        });
+        return [controller, newVal];
+    };
+    var black = 0;
+    var white = 0;
+    for (var y = 1; y <= size; y++) {
+        for (var x = 1; x <= size; x++) {
+            var spot = board[x + '-' + y];
+            if (spot.color === 'black') {
+                black++;
+            } else if (spot.color === 'white') {
+                white++;
+            } else if (!spot.checked) {
+                var blar = check(spot, null, 0);
+                if (blar[0] === 'black') {
+                    black += blar[1];
+                } else if (blar[0] === 'white') {
+                    white += blar[1];
+                }
+            }
+        }
+    }
+    var winner = black > white ? 'Black' : 'White';
+    return 'Black ' + black + ', White ' + white + '. ' + winner + ' wins!';
+};
 
 /***/ })
 /******/ ]);

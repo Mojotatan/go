@@ -12,6 +12,10 @@ socket.on('newUser', (user) => {
     console.log(`${user} has entered the lobby`)
 })
 
+socket.on('newNewUser', (text) => {
+    console.log(text)
+})
+
 socket.on('setName', () => {
     //ENABLE THIS FOR 'PRODUCTION'
     // const user = prompt('Enter a user name') || 'No-name McLamerson';
@@ -62,6 +66,10 @@ socket.on('play', (action) => {
 socket.on('kill', (action) => {
     // console.log('A piece falls!')
     store.dispatch(action)
+})
+
+socket.on('finalScore', (score) => {
+    console.log('Final score:', score)
 })
 
 export default socket
